@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 10rem;">
+        <div class="container" style="max-width: 500px;">
+            <div class="card fade-in stagger-1" style="padding: 3rem;">
+                <h1 style="text-align: center; font-size: 2rem; margin-bottom: 3rem;">Access <span
+                        class="text-gradient">Portal</span></h1>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label">Identifier (Email)</label>
+                        <input type="email" name="email" class="form-input" placeholder="user@future.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Encryption Key (Password)</label>
+                        <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <div id="error-msg"
+                        style="color: var(--secondary); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></div>
+
+                    <button type="submit" class="btn" style="width: 100%; padding: 1rem;">Initialize Link</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-secondary);">
+                    New terminal? <a href="Register.html" class="text-gradient"
+                        style="text-decoration: none; font-weight: 700;">Registry Here</a>
+                </p>
+
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
+                    <p
+                        style="text-align: center; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 1rem; letter-spacing: 0.1rem;">
+                        DEMO ACCESS OVERRIDE</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="quickLogin('admin@store.com')" class="btn btn-secondary"
+                            style="flex: 1; font-size: 0.7rem; padding: 0.8rem;">ADMIN MODE</button>
+                        <button onclick="quickLogin('user@store.com')" class="btn btn-secondary"
+                            style="flex: 1; font-size: 0.7rem; padding: 0.8rem;">USER MODE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/cartManager.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Layout.render();
+
+            const form = document.getElementById('login-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                await performLogin(data);
+            });
+
+            window.quickLogin = async (email) => {
+                await performLogin({ email, password: 'demopassword' });
+            };
+
+            async function performLogin(data) {
+                const res = await api.post('/auth/login.php', data);
+
+                if (res && res.token) {
+                    store.setAuth(res.token, res.user);
+                    window.location.href = 'index.html';
+                } else {
+                    const err = document.getElementById('error-msg');
+                    err.textContent = (res && res.error) ? res.error : 'Access Denied: Invalid Credentials';
+                    err.style.display = 'block';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <h1 class="fade-in stagger-1" style="text-align: center; margin-bottom: 4rem;">Pinned <span
+                    class="text-gradient">Artifacts</span></h1>
+
+            <div id="wishlist-list" class="product-grid fade-in stagger-2">
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/cartManager.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+
+            const user = store.getUser();
+            if (!user) {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            async function renderWishlist() {
+                const wishlistIds = JSON.parse(sessionStorage.getItem('store_wishlist_demo') || '[]');
+
+                const allProducts = await api.get('/products/get.php');
+                const wishlist = allProducts.filter(p => wishlistIds.includes(p.id));
+
+                const container = document.getElementById('wishlist-list');
+
+                if (wishlist && wishlist.length > 0) {
+                    container.innerHTML = wishlist.map(p => `
+                        <div class="card">
+                            <a href="ProductDetail.html?id=${p.id}">
+                                <img src="${p.image}" alt="${p.name}">
+                            </a>
+                            <div style="margin-top: 1.5rem;">
+                                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">${p.name}</h3>
+                                <p class="text-gradient" style="font-weight: 700;">${p.price.toFixed(2)} EGP</p>
+                                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                                     <button class="btn" style="flex: 1;" onclick="moveToCart(${p.id})">Transfer to Cart</button>
+                                     <button class="btn btn-secondary" onclick="removeFromWishlist(${p.id})">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; grid-column: 1/-1; padding: 4rem 0;">
+                            <p style="color: var(--text-secondary);">Your wishlist terminal is empty.</p>
+                            <a href="Products.html" class="text-gradient" style="text-decoration: none; display: inline-block; margin-top: 1rem;">Browse Collection →</a>
+                        </div>
+                    `;
+                }
+            }
+
+            window.removeFromWishlist = (id) => {
+                let wishlist = JSON.parse(sessionStorage.getItem('store_wishlist_demo') || '[]');
+                wishlist = wishlist.filter(itemId => itemId !== id);
+                sessionStorage.setItem('store_wishlist_demo', JSON.stringify(wishlist));
+                renderWishlist();
+            };
+
+            renderWishlist();
+        });
+
+        async function moveToCart(productId) {
+            const wishlist = await api.get('/wishlist/get.php', store.getToken());
+            const product = wishlist.find(p => p.id === productId);
+
+            if (product) {
+                const success = await cartManager.add(product, null, 1);
+                if (success) {
+                    showNotification('Moved to your active inventory.', 'success');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

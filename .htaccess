@@ -1,0 +1,19 @@
+# .htaccess for InfinityFree
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # If file exists, serve it
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Otherwise redirect to index.html (SPA structure) or just let it fail
+    # RewriteRule ^(.*)$ index.html [L]
+</IfModule>
+
+# Protect config files
+<Files "env.php">
+    Order allow,deny
+    Deny from all
+</Files>

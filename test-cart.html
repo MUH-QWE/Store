@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Cart System Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .status {
+            background: #f0f0f0;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .test-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        #log {
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .log-entry {
+            margin: 0.25rem 0;
+        }
+
+        .log-success {
+            color: #10b981;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-info {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🛒 Dual Cart System Test</h1>
+
+        <div class="status">
+            <div class="status-item">
+                <span>cartManager.js Status:</span>
+                <span id="status-cartmanager" class="error">⏳ Loading...</span>
+            </div>
+            <div class="status-item">
+                <span>LocalStorage Status:</span>
+                <span id="status-localstorage" class="error">⏳ Checking...</span>
+            </div>
+            <div class="status-item">
+                <span>API Status:</span>
+                <span id="status-api" class="error">⏳ Checking...</span>
+            </div>
+            <div class="status-item">
+                <span>Items in Cart:</span>
+                <span id="cart-count" class="success">0</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Guest Cart Tests (LocalStorage)</h3>
+            <button class="btn" onclick="testGuestAdd()">➕ Add Test Product</button>
+            <button class="btn" onclick="testGuestView()">👁️ View Cart</button>
+            <button class="btn" onclick="testGuestClear()">🗑️ Clear Cart</button>
+        </div>
+
+        <div class="test-section">
+            <h3>User Cart Tests (Database)</h3>
+            <button class="btn" onclick="testAuthAdd()">➕ Add Product (Requires Login)</button>
+            <button class="btn" onclick="testAuthView()">👁️ View Cart from API</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Sync Tests</h3>
+            <button class="btn" onclick="testSync()">🔄 Simulate Login & Sync</button>
+        </div>
+
+        <div id="log"></div>
+    </div>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/cartManager.js"></script>
+
+    <script>
+        const logDiv = document.getElementById('log');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString('en-US')}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateCartCount() {
+            const count = cartManager.cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+
+            if (typeof cartManager !== 'undefined') {
+                document.getElementById('status-cartmanager').textContent = '✅ Loaded';
+                document.getElementById('status-cartmanager').className = 'success';
+                log('✅ cartManager.js loaded successfully', 'success');
+            } else {
+                document.getElementById('status-cartmanager').textContent = '❌ Not Loaded';
+                log('❌ Failed to load cartManager.js', 'error');
+            }
+
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                document.getElementById('status-localstorage').textContent = '✅ Working';
+                document.getElementById('status-localstorage').className = 'success';
+                log('✅ LocalStorage working correctly', 'success');
+            } catch (e) {
+                document.getElementById('status-localstorage').textContent = '❌ Not Working';
+                log('❌ LocalStorage unavailable', 'error');
+            }
+
+            fetch('../app/api/products/get.php')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('status-api').textContent = '✅ Connected';
+                    document.getElementById('status-api').className = 'success';
+                    log('✅ API connected and working', 'success');
+                })
+                .catch(err => {
+                    document.getElementById('status-api').textContent = '❌ Disconnected';
+                    log('❌ Failed to connect to API', 'error');
+                });
+
+            if (typeof cartManager !== 'undefined') {
+                cartManager.subscribe((cart) => {
+                    updateCartCount();
+                    log(`🔔 Cart Updated: ${cart.length} items`, 'info');
+                });
+            }
+        });
+
+        async function testGuestAdd() {
+            log('🧪 Test: Adding guest product...', 'info');
+            const testProduct = {
+                id: 999,
+                name: 'Test Product',
+                price: 99.99,
+                image: '/test.jpg'
+            };
+
+            const success = await cartManager.add(testProduct, null, 1);
+            if (success) {
+                log('✅ Product added successfully to LocalStorage', 'success');
+            } else {
+                log('❌ Failed to add product', 'error');
+            }
+        }
+
+        function testGuestView() {
+            log('🧪 Test: Viewing guest cart...', 'info');
+            const guestCart = localStorage.getItem('guest_cart');
+            if (guestCart) {
+                const cart = JSON.parse(guestCart);
+                log(`📦 Cart contains ${cart.length} items`, 'success');
+                cart.forEach((item, index) => {
+                    log(`  ${index + 1}. ${item.name} - Qty: ${item.quantity}`, 'info');
+                });
+            } else {
+                log('📭 Cart is empty', 'info');
+            }
+        }
+
+        async function testGuestClear() {
+            log('🧪 Test: Clearing guest cart...', 'info');
+            await cartManager.clear();
+            log('✅ Cart cleared', 'success');
+        }
+
+        async function testAuthAdd() {
+            log('🧪 Test: Adding user product...', 'info');
+            const token = store.getToken();
+            if (!token) {
+                log('⚠️ Must login first', 'error');
+                return;
+            }
+
+            const testProduct = {
+                id: 1,
+                name: 'Database Product',
+                price: 149.99,
+                image: '/test.jpg'
+            };
+
+            const success = await cartManager.add(testProduct, null, 1);
+            if (success) {
+                log('✅ Product added successfully to Database', 'success');
+            } else {
+                log('❌ Failed to add product', 'error');
+            }
+        }
+
+        async function testAuthView() {
+            log('🧪 Test: Viewing user cart from API...', 'info');
+            const token = store.getToken();
+            if (!token) {
+                log('⚠️ Must login first', 'error');
+                return;
+            }
+
+            const cart = await api.get('/cart/get.php', token);
+            if (cart) {
+                log(`📦 Cart contains ${cart.length} items from Database`, 'success');
+                cart.forEach((item, index) => {
+                    log(`  ${index + 1}. ${item.name} - Qty: ${item.quantity}`, 'info');
+                });
+            } else {
+                log('❌ Failed to fetch cart from API', 'error');
+            }
+        }
+
+        async function testSync() {
+            log('🧪 Test: Simulating Sync...', 'info');
+            log('ℹ️ These tests require actual login', 'info');
+            log('ℹ️ Steps:', 'info');
+            log('  1. Add items as guest', 'info');
+            log('  2. Login', 'info');
+            log('  3. Sync happens automatically', 'info');
+            log('  4. Check cart in database', 'info');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAYEB DJERBA | Futuristic Clothing Store</title>
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container" style="margin-bottom: 6rem;">
+            <div
+                style="position: relative; border-radius: 30px; overflow: hidden; min-height: 85vh; display: flex; align-items: center; justify-content: center; box-shadow: 0 30px 60px rgba(0,0,0,0.3);">
+                <!-- Cinematic Dark Futuristic Hero -->
+                <img src="https://images.pexels.com/photos/10363229/pexels-photo-10363229.jpeg?auto=compress&cs=tinysrgb&w=2560"
+                    alt="Dark Futuristic Fashion Hero"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) contrast(1.1);">
+
+                <div class="fade-in stagger-1" style="z-index: 2; text-align: center; padding: 2rem; max-width: 900px;">
+                    <span
+                        style="color: var(--accent); font-size: 1rem; letter-spacing: 0.8em; text-transform: uppercase; margin-bottom: 2rem; display: block; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">EGYPTIAN
+                        HERITAGE X FUTURE</span>
+                    <h1
+                        style="font-size: 6rem; margin: 0; line-height: 1.1; color: #fff; text-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: 800;">
+                        OUTFIT THE <br> <span class="text-gradient"
+                            style="background: linear-gradient(135deg, #fff 0%, var(--primary) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">NEXT
+                            ERA</span>
+                    </h1>
+                    <br><br><br>
+                    <div style="display: flex; justify-content: center; gap: 2rem;">
+                        <a href="Products.html" class="btn"
+                            style="background: white; color: black; border: none; padding: 1rem 3rem; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em;">EXPLORE
+                            COLLECTION</a>
+                        <a href="#" class="btn btn-secondary"
+                            style="border-color: rgba(255,255,255,0.3); color: white; backdrop-filter: blur(10px); padding: 1rem 3rem; background: rgba(255,255,255,0.1);">VIRTUAL
+                            FITTING</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div
+            style="position: absolute; top: 10%; right: 5%; width: 300px; height: 300px; background: radial-gradient(circle, var(--secondary) 0%, transparent 70%); opacity: 0.1; filter: blur(50px); pointer-events: none;">
+        </div>
+        <div
+            style="position: absolute; top: 40%; left: 5%; width: 200px; height: 200px; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); opacity: 0.1; filter: blur(50px); pointer-events: none;">
+        </div>
+
+        <section class="container">
+            <h2 class="fade-in stagger-2" style="margin-bottom: 3rem; text-align: center;">Featured <span
+                    class="text-gradient">Arrivals</span></h2>
+            <div id="featured-products" class="product-grid fade-in stagger-3">
+            </div>
+        </section>
+
+        <div class="neon-line"></div>
+    </main>
+
+    <script src="js/ALL.js?v=1.1"></script>
+    <script src="js/cartManager.js?v=1.1"></script>
+    <script src="js/layout.js?v=1.1"></script>
+    <script src="js/header.js?v=1.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+
+            const products = await api.get('/products/get.php');
+            const grid = document.getElementById('featured-products');
+
+            if (products && products.length > 0) {
+                grid.innerHTML = products.slice(0, 3).map(p => `
+                    <div class="card">
+                        <a href="ProductDetail.html?id=${p.id}">
+                            <img src="${p.image}" alt="${p.name}">
+                        </a>
+                        <div style="margin-top: 1.5rem;">
+                            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">${p.name}</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; font-weight: 300; height: 3rem; overflow: hidden;">${p.description}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="text-gradient" style="font-weight: 700; font-size: 1.2rem;">${p.price.toFixed(2)} EGP</span>
+                                <a href="ProductDetail.html?id=${p.id}" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.7rem; text-decoration: none;">
+                                    View Artifact
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+
+</html>

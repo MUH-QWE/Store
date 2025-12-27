@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tayeb Djerba - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="container" style="padding-top: 2rem;">
+
+        <h1>Dashboard</h1>
+        <p>Welcome to the main application hub.</p>
+
+        <div class="grid">
+            <a href="Products.php" class="card" style="text-align: center;">
+                <h3>Shop</h3>
+            </a>
+            <a href="Cart.php" class="card" style="text-align: center;">
+                <h3>Cart</h3>
+            </a>
+            <a href="Orders.php" class="card" style="text-align: center;">
+                <h3>My Orders</h3>
+            </a>
+            <a href="Wishlist.php" class="card" style="text-align: center;">
+                <h3>Wishlist</h3>
+            </a>
+        </div>
+
+        <script>
+            if (!store.getToken()) window.location.href = 'LogIn.html';
+        </script>
+
+    </main>
+    <script src="js/ALL.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+</body>
+
+</html>
+
+

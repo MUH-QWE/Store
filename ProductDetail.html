@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .image-container {
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            aspect-ratio: 1/1;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s var(--cubic-ease);
+        }
+
+        .option-badge {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .option-badge.active {
+            border-color: var(--primary);
+            background: rgba(0, 240, 255, 0.2) !important;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <div id="product-detail"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;">
+                <!-- Content injected by JS -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js?v=1.1"></script>
+    <script src="js/cartManager.js?v=1.1"></script>
+    <script src="js/layout.js?v=1.1"></script>
+    <script src="js/header.js?v=1.1"></script>
+    <script>
+        let selectedSize = 'S';
+        let currentProduct = null;
+
+        function selectSize(el, size) {
+            console.log('Size Triggered:', size);
+            document.querySelectorAll('.option-badge').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            selectedSize = size;
+            showNotification(`PROTOCOL SIZE: ${size} SELECTED`, 'info');
+        }
+
+        async function addToArsenal() {
+            if (!currentProduct) return;
+            const productWithVariant = { ...currentProduct, variant: selectedSize };
+            const success = await cartManager.add(productWithVariant);
+            if (success) {
+                showNotification(`DEPLOYED: ${currentProduct.name} [Size: ${selectedSize}] TO ARSENAL`, 'success');
+            }
+        }
+
+        function toggleWish(id, btn) {
+            let wishlist = JSON.parse(sessionStorage.getItem('store_wishlist_demo') || '[]');
+            const index = wishlist.indexOf(id);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                btn.innerHTML = '★';
+                btn.style.color = 'var(--text-primary)';
+            } else {
+                wishlist.push(id);
+                btn.innerHTML = '❤️';
+                btn.style.color = 'var(--secondary)';
+            }
+            sessionStorage.setItem('store_wishlist_demo', JSON.stringify(wishlist));
+            window.dispatchEvent(new Event('wishlist-update'));
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id') || 1;
+            currentProduct = await api.get(`/products/get_single.php?id=${productId}`);
+
+            if (currentProduct && !currentProduct.error) {
+                const container = document.getElementById('product-detail');
+                container.innerHTML = `
+                    <div class="fade-in stagger-1">
+                        <div class="image-container">
+                            <img src="${currentProduct.image}" alt="${currentProduct.name}" id="main-product-image">
+                        </div>
+                    </div>
+
+                    <div class="fade-in stagger-2">
+                        <span style="color: var(--accent); font-size: 0.8rem; letter-spacing: 0.2em;">PREMIUM ARCHIVE</span>
+                        <h1 style="font-size: 3.5rem; margin: 1rem 0; line-height: 1.1;">${currentProduct.name}</h1>
+                        <p class="text-gradient" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">${currentProduct.price.toFixed(2)} EGP</p>
+
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2.5rem; font-weight: 300;">
+                            ${currentProduct.description}
+                        </p>
+
+                        <div style="margin-bottom: 2.5rem;">
+                            <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--primary);">SELECT TRANSLATION (SIZE)</h4>
+                            <div style="display: flex; gap: 1.2rem;">
+                                <div class="option-badge active" onclick="selectSize(this, 'S')">S</div>
+                                <div class="option-badge" onclick="selectSize(this, 'M')">M</div>
+                                <div class="option-badge" onclick="selectSize(this, 'L')">L</div>
+                                <div class="option-badge" onclick="selectSize(this, 'XL')">XL</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 2rem;">
+                            ${store.getUser() ? `
+                                <button class="btn" style="flex: 2; padding: 1.2rem; font-size: 1rem;" onclick="addToArsenal()">Add to Arsenal</button>
+                            ` : `
+                                <a href="LogIn.html" class="btn" style="flex: 2; padding: 1.2rem; text-decoration: none; text-align: center; font-size: 1rem;">Login to Purchase</a>
+                            `}
+                            <button class="btn btn-secondary" style="flex: 1; padding: 1.2rem; min-width: 60px; color: ${store.isInWishlist(currentProduct.id) ? 'var(--secondary)' : 'var(--text-primary)'};" onclick="toggleWish(${currentProduct.id}, this)">
+                                ${store.isInWishlist(currentProduct.id) ? '❤️' : '★'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Interactive Image
+                const imgContainer = document.querySelector('.image-container');
+                const img = imgContainer.querySelector('img');
+                imgContainer.addEventListener('mousemove', (e) => {
+                    const rect = imgContainer.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    img.style.transform = `scale(1.1) rotateY(${x * 12}deg) rotateX(${-y * 12}deg)`;
+                });
+                imgContainer.addEventListener('mouseleave', () => {
+                    img.style.transform = `scale(1) rotateY(0) rotateX(0)`;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

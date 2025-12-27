@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <h1 class="fade-in stagger-1" style="text-align: center; margin-bottom: 4rem;">Transmission <span
+                    class="text-gradient">History</span></h1>
+
+            <div id="orders-list" class="fade-in stagger-2" style="max-width: 800px; margin: 0 auto;">
+                <div class="card">Initializing Log...</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/cartManager.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+
+            const user = store.getUser();
+            if (!user) {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            const orders = await api.get('/orders/get.php', store.getToken());
+            const list = document.getElementById('orders-list');
+
+            if (orders && orders.length > 0) {
+                list.innerHTML = orders.map(o => `
+                    <div class="card" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; padding: 2rem;">
+                        <div>
+                            <span style="color: var(--primary); font-size: 0.7rem; letter-spacing: 0.2em;">ORDER ID: #${o.id}</span>
+                            <h3 style="margin: 0.5rem 0;">Status: <span style="color: ${o.status === 'paid' ? 'var(--accent)' : 'var(--secondary)'}">${o.status}</span></h3>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 300;">Authorized on: ${new Date(o.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p class="text-gradient" style="font-weight: 700; font-size: 1.5rem;">${parseFloat(o.total_amount).toFixed(2)} EGP</p>
+                            <a href="#" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.6rem; margin-top: 0.5rem;">View Protocol</a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 4rem;">
+                        <p style="color: var(--text-secondary);">No previous transmissions found in your current identity.</p>
+                        <a href="Products.html" class="text-gradient" style="text-decoration: none; display: inline-block; margin-top: 1rem;">Explore Gear →</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

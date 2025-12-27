@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <h1 class="fade-in stagger-1" style="text-align: center; margin-bottom: 4rem;">The <span
+                    class="text-gradient">Collection</span></h1>
+
+            <div class="filter-container fade-in stagger-2"
+                style="display: flex; gap: 1.5rem; margin-bottom: 4rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+                <div class="search-box" style="position: relative; flex: 1; max-width: 400px;">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search archive..."
+                        style="width: 100%; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 30px; padding: 0.8rem 1.5rem; color: var(--text-primary);">
+                    <button id="admin-add-btn" class="btn"
+                        style="display: none; position: absolute; right: 5px; top: 5px; bottom: 5px; padding: 0 1.2rem; border-radius: 25px;">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <select id="sort-select" class="sort-select"
+                    style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.8rem 1.5rem; color: var(--text-primary); cursor: pointer;">
+                    <option value="default">Default Sync</option>
+                    <option value="price-low">Value: Low to High</option>
+                    <option value="price-high">Value: High to Low</option>
+                    <option value="name">Alpha Sequence</option>
+                </select>
+            </div>
+
+            <div id="product-grid" class="product-grid fade-in stagger-3">
+            </div>
+
+            <div id="no-results"
+                style="display: none; text-align: center; padding: 4rem; color: var(--text-secondary);">
+                <p>No matches found in the current frequency.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js?v=1.1"></script>
+    <script src="js/cartManager.js?v=1.1"></script>
+    <script src="js/layout.js?v=1.1"></script>
+    <script src="js/header.js?v=1.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+
+            const grid = document.getElementById('product-grid');
+            const searchInput = document.getElementById('search-input');
+            const sortSelect = document.getElementById('sort-select');
+
+            const user = store.getUser();
+            const isAdmin = user && user.role === 'admin';
+            if (isAdmin) document.getElementById('admin-add-btn').style.display = 'inline-block';
+
+            let allProducts = await api.get('/products/get.php');
+
+            window.renderProducts = (productsToRender) => {
+                if (!productsToRender || productsToRender.length === 0) {
+                    grid.innerHTML = '';
+                    document.getElementById('no-results').style.display = 'block';
+                    return;
+                }
+                document.getElementById('no-results').style.display = 'none';
+
+                grid.innerHTML = productsToRender.map((p, index) => {
+                    const isWishlisted = store.isInWishlist && store.isInWishlist(p.id);
+                    return `
+                        <div class="card fade-in" style="animation-delay: ${index * 0.05}s">
+                            <div style="position: relative;">
+                                <a href="ProductDetail.html?id=${p.id}" style="display: block; overflow: hidden; border-radius: 12px;">
+                                    <img src="${p.image}" alt="${p.name}" style="transition: transform 0.5s var(--cubic-ease);">
+                                </a>
+                                ${p.stock <= 5 ? `
+                                    <div style="position: absolute; bottom: 1rem; left: 1rem; font-size: 0.6rem; background: var(--secondary); color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: 700; z-index: 10;">LOW STOCK: ${p.stock}</div>
+                                ` : ''}
+                            </div>
+                            <div style="margin-top: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">${p.name}</h3>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">INVENTORY: ${p.stock}</span>
+                                </div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; font-weight: 300; height: 3rem; overflow: hidden;">${p.description}</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="text-gradient" style="font-weight: 700; font-size: 1.2rem;">${p.price.toFixed(2)} EGP</span>
+                                    <div style="display: flex; gap: 0.8rem; align-items: center;">
+                                        <button class="btn btn-secondary" style="padding: 0.5rem; font-size: 0.8rem;" onclick="toggleWishlist(${p.id}, this)">
+                                            ${isWishlisted ? '❤️' : '🤍'}
+                                        </button>
+                                        <a href="ProductDetail.html?id=${p.id}" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.7rem; text-decoration: none;">
+                                            Select Options
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            window.toggleWishlist = async (id, btn) => {
+                let wishlist = JSON.parse(sessionStorage.getItem('store_wishlist_demo') || '[]');
+                const index = wishlist.indexOf(id);
+                if (index > -1) {
+                    wishlist.splice(index, 1);
+                    btn.innerHTML = '🤍';
+                } else {
+                    wishlist.push(id);
+                    btn.innerHTML = '❤️';
+                }
+                sessionStorage.setItem('store_wishlist_demo', JSON.stringify(wishlist));
+                window.dispatchEvent(new Event('wishlist-update'));
+            };
+
+            window.filterAndSort = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const sortBy = sortSelect.value;
+                let filtered = allProducts.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.description.toLowerCase().includes(searchTerm)
+                );
+                if (sortBy === 'price-low') filtered.sort((a, b) => a.price - b.price);
+                else if (sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
+                else if (sortBy === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+                renderProducts(filtered);
+            };
+
+            searchInput.addEventListener('input', filterAndSort);
+            sortSelect.addEventListener('change', filterAndSort);
+
+            renderProducts(allProducts);
+        });
+    </script>
+</body>
+
+</html>

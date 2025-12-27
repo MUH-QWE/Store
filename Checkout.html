@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .form-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <h1 class="fade-in stagger-1" style="margin-bottom: 3rem;">Finalize <span
+                    class="text-gradient">Transaction</span></h1>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 4rem;">
+                <div class="fade-in stagger-2">
+                    <div class="card" style="padding: 2.5rem;">
+                        <h3 style="margin-bottom: 2rem;">Dispatch Information</h3>
+                        <form id="checkout-form">
+                            <div class="form-group">
+                                <label class="form-label">Physical Terminal (Address)</label>
+                                <input type="text" id="address" class="form-input"
+                                    placeholder="e.g. Neural Link St. 2049" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contact Frequency (Phone Number)</label>
+                                <input type="tel" id="phone" class="form-input" placeholder="e.g. +216 20 000 000"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Dispatch Location (Google Maps)</label>
+                                <div id="map-terminal" class="map-terminal" onclick="openMapSelector()"
+                                    style="height: 150px; cursor: pointer; border-style: solid; background: rgba(0,240,255,0.02);">
+                                    <span id="map-status"
+                                        style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">🛰️
+                                        INITIALIZE SATELLITE PICKER</span>
+                                    <p style="font-size: 0.6rem; opacity: 0.6; margin-top: 0.5rem;">Click to pinpoint on
+                                        Google Maps</p>
+                                </div>
+                                <input type="hidden" id="geo-coordinates" value="">
+                            </div>
+
+                            <h3 style="margin: 3rem 0 1.5rem;">Payment Protocol</h3>
+                            <div class="payment-grid">
+                                <div class="payment-btn active" id="pay-cod" onclick="selectPayment('cod')">
+                                    <span>CASH ON DELIVERY</span>
+                                    <div style="font-size: 0.6rem; opacity: 0.6; margin-top:0.5rem">Pay at Terminal
+                                        Entrance</div>
+                                </div>
+                                <div class="payment-btn" id="pay-vf" onclick="selectPayment('vf')">
+                                    <span>VODAFONE CASH</span>
+                                    <div style="font-size: 0.6rem; opacity: 0.6; margin-top:0.5rem">Encrypted Transfer
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="vf-details"
+                                style="display: none; margin-top: 2rem; padding: 1.5rem; background: rgba(255,0,214,0.05); border: 1px solid rgba(255,0,214,0.2); border-radius: 12px;">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <span class="form-label">Transfer To Number</span>
+                                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--secondary);">
+                                        01012345678</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Upload Proof (Screenshot)</label>
+                                    <label for="payment-proof" class="custom-file-upload">
+                                        <span id="file-name-display">CHOOSE TRANSMISSION SNAPSHOT</span>
+                                    </label>
+                                    <input type="file" id="payment-proof" style="display: none;" accept="image/*"
+                                        onchange="updateFileName(this)">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="fade-in stagger-3">
+                    <div class="card" style="padding: 2rem;">
+                        <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Quantum Total</h2>
+                        <div id="order-summary" style="margin-bottom: 2rem;"></div>
+                        <button id="place-order-btn" class="btn" style="width: 100%;">Authorize Payment</button>
+                        <div id="msg" style="margin-top: 1.5rem; text-align: center; font-size: 0.8rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/cartManager.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Layout.render();
+
+            const user = store.getUser();
+            if (!user) {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            cartManager.subscribe(cart => {
+                if (!cart || cart.length === 0) { window.location.href = 'Cart.html'; return; }
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                document.getElementById('order-summary').innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-secondary);">
+                        <span>Subtotal</span><span>${total.toFixed(2)} EGP</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; color: var(--accent);">
+                        <span>Delivery</span><span>Free</span>
+                    </div>
+                    <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.5rem;">
+                            <span>Total</span><span class="text-gradient">${total.toFixed(2)} EGP</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            window.openMapSelector = () => {
+                const mapLink = "https://www.google.com/maps/search/?api=1&query=Djerba";
+                window.open(mapLink, '_blank');
+
+                setTimeout(() => {
+                    const status = document.getElementById('map-status');
+                    const geo = document.getElementById('geo-coordinates');
+                    status.innerHTML = "🛰️ COORDINATES SECURED: 33.8869° N, 10.8523° E";
+                    geo.value = "33.8869, 10.8523";
+                    status.parentElement.style.borderColor = "var(--accent)";
+                    status.parentElement.style.background = "rgba(123, 255, 123, 0.05)";
+                }, 2000);
+            };
+
+            let paymentMethod = 'cod';
+            window.selectPayment = (type) => {
+                paymentMethod = type;
+                document.getElementById('pay-cod').classList.toggle('active', type === 'cod');
+                document.getElementById('pay-vf').classList.toggle('active', type === 'vf');
+                document.getElementById('vf-details').style.display = type === 'vf' ? 'block' : 'none';
+            };
+
+            window.updateFileName = (input) => {
+                const fileName = input.files[0] ? input.files[0].name : "CHOOSE TRANSMISSION SNAPSHOT";
+                document.getElementById('file-name-display').textContent = fileName;
+                document.getElementById('file-name-display').style.color = input.files[0] ? "var(--accent)" : "var(--text-secondary)";
+            };
+
+            document.getElementById('place-order-btn').addEventListener('click', async () => {
+                const geo = document.getElementById('geo-coordinates').value;
+                const address = document.getElementById('address').value;
+                const phone = document.getElementById('phone').value;
+
+                if (!address) { showNotification('Terminal Address Required.', 'error'); return; }
+                if (!phone) { showNotification('Contact Phone Number Required.', 'error'); return; }
+                if (!geo) { showNotification('Satellite Coordinates Required. Please click the map.', 'info'); return; }
+
+                if (paymentMethod === 'vf' && !document.getElementById('payment-proof').files[0]) {
+                    showNotification('Upload Transmission Screenshot (Proof).', 'error'); return;
+                }
+
+                const btn = document.getElementById('place-order-btn');
+                btn.disabled = true;
+                btn.textContent = 'TRANSMITTING...';
+
+                const res = await api.post('/orders/create.php', {
+                    method: paymentMethod,
+                    coords: geo,
+                    address: address,
+                    items: cartManager.get()
+                }, store.getToken());
+
+                document.getElementById('msg').innerHTML = `<p style="color: var(--accent);">TRANSACTION COMPLETED. SYNCING...</p>`;
+                await cartManager.clear();
+                setTimeout(() => window.location.href = 'Success.html', 1500);
+            });
+        });
+    </script>
+</body>
+
+</html>
