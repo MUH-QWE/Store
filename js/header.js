@@ -12,23 +12,33 @@ window.renderNav = function () {
     let html = `
         <a href="index.html">Home</a>
         <a href="Products.html">Products</a>
-        <a href="Cart.html" style="position: relative;">
-            Cart
-            <span class="cart-count-badge badge">0</span>
-        </a>
     `;
 
     if (user) {
-        html += `
-            <a href="Orders.html">Orders</a>
-            <a href="Wishlist.html">Wishlist</a>
-            <a href="#" onclick="store.logout()" class="text-gradient">Logout [${user.name}]</a>
-        `;
+        if (user.role !== 'admin') {
+            html += `
+                <a href="Cart.html" style="position: relative;">
+                    Cart
+                    <span class="cart-count-badge badge">0</span>
+                </a>
+                <a href="Inbox.html">Inbox</a>
+                <a href="Profile.html">My Profile</a>
+                <a href="Orders.html">Orders</a>
+                <a href="Wishlist.html">Wishlist</a>
+            `;
+        }
+
+        html += `<a href="#" onclick="store.logout()" class="text-gradient">Logout [${user.name}]</a>`;
+
         if (user.role === 'admin') {
-            html += `<a href="AdminPanel.html" style="color: var(--accent);">Admin</a>`;
+            html += `<a href="AdminDashboard.html" style="color: var(--accent);">Admin</a>`;
         }
     } else {
         html += `
+            <a href="Cart.html" style="position: relative;">
+                Cart
+                <span class="cart-count-badge badge">0</span>
+            </a>
             <a href="LogIn.html">Login</a>
             <a href="Register.html" class="btn" style="padding: 0.4rem 1rem; border-radius: 8px;">Entry</a>
         `;

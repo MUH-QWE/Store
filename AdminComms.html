@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - Communications</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/AdminPanel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        .msg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .msg-item {
+            padding: 1.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .msg-item:hover {
+            border-color: var(--primary);
+            transform: translateX(10px);
+        }
+
+        .msg-item.unread {
+            border-left: 4px solid var(--primary);
+            background: rgba(231, 111, 81, 0.03);
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .msg-sender {
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .msg-time {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .msg-preview {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-top-bar">
+            <div class="sidebar-logo">
+                <i class="fas fa-layer-group"></i>
+                <span>NEXUS</span>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="index.html" class="nav-item"><i class="fas fa-globe"></i><span>Live Site</span></a>
+                <a href="AdminDashboard.html" class="nav-item"><i
+                        class="fas fa-tachometer-alt"></i><span>Management</span></a>
+                <a href="AdminStaff.html" class="nav-item"><i class="fas fa-users-cog"></i><span>Staff
+                        Control</span></a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Comms</span>
+                    <span class="nav-badge">0</span>
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-crown"></i></div>
+                <div class="user-info">
+                    <h4 id="admin-name" style="margin: 0; font-size: 0.8rem;">Master Admin</h4>
+                </div>
+                <button class="logout-btn" onclick="store.logout()" style="margin-left: 1rem; padding: 0.4rem 0.8rem;">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+
+            <div class="content-grid stagger-2">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h3>Inbox Stream</h3>
+                    </div>
+                    <div class="msg-list" id="inbox-list">
+                        <!-- Messages loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="panel-card" id="reply-panel">
+                    <div class="panel-header">
+                        <h3 id="reply-title">Broadcast Message</h3>
+                    </div>
+                    <form class="terminal-form" id="comms-form">
+                        <div class="form-group">
+                            <label id="target-label">Target Frequency (To)</label>
+                            <input type="text" id="target-input" placeholder="Global / Admin Channel">
+                        </div>
+                        <div class="form-group">
+                            <label>Transmission Payload</label>
+                            <textarea id="msg-body" rows="6" placeholder="Write your message..."></textarea>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i> <span id="btn-text">SEND BROADCAST</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/ALL.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = store.getUser();
+            if (!user || user.role === 'customer') {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            // RBAC Check for Management
+            if (!store.checkAccess('moderator')) {
+                showNotification('Access Denied: Level 2 clearance required.', 'error');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+                return;
+            }
+            // RBAC Check for Comms
+            if (!store.checkAccess('senior')) {
+                showNotification('Access Denied: Level 3 clearance required.', 'error');
+                setTimeout(() => window.location.href = 'AdminDashboard.html', 2000);
+                return;
+            }
+
+            document.getElementById('admin-name').textContent = user.name;
+            loadMessages();
+        });
+
+        function loadMessages() {
+            const inboxList = document.getElementById('inbox-list');
+            const userMessages = JSON.parse(localStorage.getItem('nexus_user_messages') || '[]');
+
+            // Static system messages cleared as requested
+            const systemMessages = [];
+
+            let html = '';
+
+            userMessages.forEach(m => {
+                const timeStr = new Date(m.time).toLocaleTimeString();
+                html += `
+                    <div class="msg-item ${m.status === 'unread' ? 'unread' : ''}" 
+                        onclick="openReply('${m.sender}', '${m.message.replace(/'/g, "\\'")}', '${m.user_id}'); markAsRead(${m.id})">
+                        <div class="msg-header">
+                            <span class="msg-sender">
+                                ${m.sender} 
+                                <small style="color:var(--primary); font-size:0.6rem;">[USER]</small>
+                            </span>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span class="msg-time">${timeStr}</span>
+                                <button class="btn-mini delete" style="width:25px; height:25px; font-size:0.7rem;" 
+                                    onclick="event.stopPropagation(); deleteUserMessage(${m.id})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="msg-preview">${m.subject || m.message}</div>
+                    </div>
+                `;
+            });
+
+            systemMessages.forEach(m => {
+                html += `
+                    <div class="msg-item ${m.unread ? 'unread' : ''}" 
+                        onclick="openReply('${m.sender}', '${m.message.replace(/'/g, "\\'")}')">
+                        <div class="msg-header">
+                            <span class="msg-sender">${m.sender}</span>
+                            <span class="msg-time">${m.time}</span>
+                        </div>
+                        <div class="msg-preview">${m.message}</div>
+                    </div>
+                `;
+            });
+
+            inboxList.innerHTML = html;
+            document.querySelector('.nav-badge').textContent = userMessages.filter(m => m.status === 'unread').length + systemMessages.filter(m => m.unread).length;
+        }
+
+        window.markAsRead = (id) => {
+            const messages = JSON.parse(localStorage.getItem('nexus_user_messages') || '[]');
+            const idx = messages.findIndex(m => m.id === id);
+            if (idx !== -1) {
+                messages[idx].status = 'read';
+                localStorage.setItem('nexus_user_messages', JSON.stringify(messages));
+                loadMessages();
+            }
+        };
+
+        window.deleteUserMessage = (id) => {
+            if (!confirm('PURGE TRANSMISSION DATA?')) return;
+            let messages = JSON.parse(localStorage.getItem('nexus_user_messages') || '[]');
+            messages = messages.filter(m => m.id !== id);
+            localStorage.setItem('nexus_user_messages', JSON.stringify(messages));
+            loadMessages();
+            showNotification('Transmission purged from archive', 'success');
+        };
+
+        let currentTargetUserId = null;
+
+        window.openReply = (sender, originalMsg, userId) => {
+            currentTargetUserId = userId;
+            const title = document.getElementById('reply-title');
+            const targetLabel = document.getElementById('target-label');
+            const targetInput = document.getElementById('target-input');
+            const msgBody = document.getElementById('msg-body');
+            const btnText = document.getElementById('btn-text');
+
+            title.innerHTML = `Reply to <span class="text-gradient">${sender}</span>`;
+            targetLabel.textContent = "Replying To";
+            targetInput.value = sender;
+            targetInput.readOnly = true;
+            msgBody.value = ``;
+            msgBody.focus();
+            btnText.textContent = "SEND REPLY";
+
+            // Highlight active message
+            document.querySelectorAll('.msg-item').forEach(el => el.style.borderColor = 'var(--glass-border)');
+            if (event && event.currentTarget) event.currentTarget.style.borderColor = 'var(--primary)';
+        };
+
+        window.sendMessage = () => {
+            const body = document.getElementById('msg-body').value;
+            const target = document.getElementById('target-input').value;
+            if (!body.trim()) return;
+
+            // If we have a specific user ID, send it to their inbox
+            if (currentTargetUserId && currentTargetUserId !== 'visitor') {
+                const inboxKey = `nexus_inbox_${currentTargetUserId}`;
+                const inbox = JSON.parse(localStorage.getItem(inboxKey) || '[]');
+                inbox.unshift({
+                    id: Date.now().toString(),
+                    type: 'SYSTEM',
+                    subject: `Response regarding: ${target}`,
+                    body: body,
+                    time: new Date().toISOString(),
+                    unread: true
+                });
+                localStorage.setItem(inboxKey, JSON.stringify(inbox));
+            }
+
+            showNotification('Transmission sent to NEXUS relays', 'success');
+            document.getElementById('comms-form').reset();
+            document.getElementById('reply-title').textContent = "Broadcast Message";
+            document.getElementById('target-label').textContent = "Target Frequency (To)";
+            document.getElementById('target-input').readOnly = false;
+            document.getElementById('btn-text').textContent = "SEND BROADCAST";
+            currentTargetUserId = null;
+        };
+    </script>
+</body>
+
+</html>

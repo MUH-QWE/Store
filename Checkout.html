@@ -27,7 +27,8 @@
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             padding: 1rem;
-            color: white;
+            color: black;
+            /* Changed to black as requested */
             transition: all 0.3s;
         }
 
@@ -67,18 +68,7 @@
                                     required>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Dispatch Location (Google Maps)</label>
-                                <div id="map-terminal" class="map-terminal" onclick="openMapSelector()"
-                                    style="height: 150px; cursor: pointer; border-style: solid; background: rgba(0,240,255,0.02);">
-                                    <span id="map-status"
-                                        style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">🛰️
-                                        INITIALIZE SATELLITE PICKER</span>
-                                    <p style="font-size: 0.6rem; opacity: 0.6; margin-top: 0.5rem;">Click to pinpoint on
-                                        Google Maps</p>
-                                </div>
-                                <input type="hidden" id="geo-coordinates" value="">
-                            </div>
+
 
                             <h3 style="margin: 3rem 0 1.5rem;">Payment Protocol</h3>
                             <div class="payment-grid">
@@ -158,19 +148,7 @@
                 `;
             });
 
-            window.openMapSelector = () => {
-                const mapLink = "https://www.google.com/maps/search/?api=1&query=Djerba";
-                window.open(mapLink, '_blank');
 
-                setTimeout(() => {
-                    const status = document.getElementById('map-status');
-                    const geo = document.getElementById('geo-coordinates');
-                    status.innerHTML = "🛰️ COORDINATES SECURED: 33.8869° N, 10.8523° E";
-                    geo.value = "33.8869, 10.8523";
-                    status.parentElement.style.borderColor = "var(--accent)";
-                    status.parentElement.style.background = "rgba(123, 255, 123, 0.05)";
-                }, 2000);
-            };
 
             let paymentMethod = 'cod';
             window.selectPayment = (type) => {
@@ -193,7 +171,7 @@
 
                 if (!address) { showNotification('Terminal Address Required.', 'error'); return; }
                 if (!phone) { showNotification('Contact Phone Number Required.', 'error'); return; }
-                if (!geo) { showNotification('Satellite Coordinates Required. Please click the map.', 'info'); return; }
+
 
                 if (paymentMethod === 'vf' && !document.getElementById('payment-proof').files[0]) {
                     showNotification('Upload Transmission Screenshot (Proof).', 'error'); return;

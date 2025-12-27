@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox | NEXUS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .inbox-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 12rem);
+        }
+
+        .msg-list {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .msg-card {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .msg-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .msg-card.active {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 3px solid var(--primary);
+        }
+
+        .msg-unread-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .msg-view {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .empty-state {
+            text-align: center;
+            margin: auto;
+            color: var(--text-dim);
+        }
+
+        .rejection-badge {
+            background: rgba(255, 78, 80, 0.1);
+            color: #ff4e50;
+            border: 1px solid rgba(255, 78, 80, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 8rem;">
+        <section class="container">
+            <h1 class="fade-in stagger-1" style="margin-bottom: 3rem;">Command <span class="text-gradient">Inbox</span>
+            </h1>
+
+            <div class="inbox-grid fade-in stagger-2">
+                <div class="msg-list" id="inbox-list">
+                    <!-- Messages here -->
+                </div>
+
+                <div class="msg-view" id="msg-view">
+                    <div class="empty-state">
+                        <i class="fas fa-envelope-open-text"
+                            style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.2;"></i>
+                        <p>Select a transmission to decrypt</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/ALL.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Layout.render();
+            loadInbox();
+        });
+
+        function loadInbox() {
+            const user = store.getUser();
+            if (!user) {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            const messages = JSON.parse(localStorage.getItem(`nexus_inbox_${user.id}`) || '[]');
+            const list = document.getElementById('inbox-list');
+
+            if (messages.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-dim);">No transmissions</div>';
+                return;
+            }
+
+            list.innerHTML = messages.map(m => `
+                <div class="msg-card ${m.unread ? 'unread' : ''}" onclick="viewMsg('${m.id}')">
+                    ${m.unread ? '<div class="msg-unread-dot"></div>' : ''}
+                    <div style="font-size: 0.7rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 800;">
+                        ${m.type === 'REJECTION' ? '<span class="rejection-badge">REJECTION</span>' : 'SYSTEM'}
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">${m.subject}</h4>
+                    <p style="font-size: 0.7rem; color: var(--text-dim);">${new Date(m.time).toLocaleString()}</p>
+                </div>
+            `).join('');
+        }
+
+        window.viewMsg = (id) => {
+            const user = store.getUser();
+            const messages = JSON.parse(localStorage.getItem(`nexus_inbox_${user.id}`) || '[]');
+            const m = messages.find(x => x.id === id);
+
+            if (!m) return;
+
+            // Mark as read
+            m.unread = false;
+            localStorage.setItem(`nexus_inbox_${user.id}`, JSON.stringify(messages));
+            loadInbox();
+
+            const view = document.getElementById('msg-view');
+            view.innerHTML = `
+                <div style="margin-bottom: 3rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span style="color: var(--primary); font-size: 0.7rem; letter-spacing: 0.2rem;">TRANSMISSION ID: #${m.id}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-dim);">${new Date(m.time).toLocaleString()}</span>
+                    </div>
+                    <h1 style="font-size: 2.5rem;">${m.subject}</h1>
+                </div>
+                
+                <div style="line-height: 1.8; color: var(--text-primary); font-size: 1.1rem; flex: 1;">
+                    ${m.body.replace(/\n/g, '<br>')}
+                </div>
+
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); font-size: 0.8rem; color: var(--text-dim);">
+                    <i class="fas fa-shield-alt" style="margin-right: 10px;"></i>
+                    END OF ENCRYPTED PAYLOAD
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,16 +1,6 @@
-const INITIAL_MOCK_PRODUCTS = [
-    { id: 1, name: 'Essential Cotton Tee', price: 450.00, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400', description: 'Premium cotton t-shirt for everyday comfort.', stock: 100 },
-    { id: 2, name: 'Urban Denim Jacket', price: 1200.00, image: 'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?w=400', description: 'Classic denim jacket with a modern fit.', stock: 45 },
-    { id: 3, name: 'Slim Fit Chinos', price: 850.00, image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400', description: 'Versatile trousers suitable for any occasion.', stock: 60 },
-    { id: 4, name: 'Oversized Hoodie', price: 950.00, image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400', description: 'Cozy and stylish hoodie for relaxed vibes.', stock: 30 },
-    { id: 5, name: 'Summer Floral Dress', price: 750.00, image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400', description: 'Lightweight dress perfect for warm weather.', stock: 25 }
-];
+const INITIAL_MOCK_PRODUCTS = [];
 
-const MOCK_ORDERS = [
-    { id: 2045, user: 'Ahmed Tech', total: 1850.00, method: 'Vodafone Cash', status: 'Pending', proof: 'proof_01.png' },
-    { id: 2046, user: 'Sarah Digital', total: 950.00, method: 'COD', status: 'Processing' },
-    { id: 2047, user: 'Yassir Node', total: 3200.00, method: 'Bank Transfer', status: 'Pending', proof: 'proof_02.png' }
-];
+const MOCK_ORDERS = [];
 
 function getProducts() {
     let products = JSON.parse(localStorage.getItem('demo_products_v3'));
@@ -45,8 +35,8 @@ window.api = {
             const products = getProducts();
             if (endpoint.includes('/orders/get_all.php')) return MOCK_ORDERS;
             if (endpoint.includes('/orders/get.php')) return [
-                { id: 2045, status: 'pending', created_at: '2025-12-18T10:00:00Z', total_amount: 145.00 },
-                { id: 1982, status: 'paid', created_at: '2025-12-10T15:30:00Z', total_amount: 55.40 }
+                { id: 2045, status: 'Pending', created_at: '2025-12-25T10:00:00Z', total_amount: 1850.00, address: 'Cairo, Maadi St. 5', phone: '01011223344', method: 'Vodafone Cash' },
+                { id: 1982, status: 'Shipped', created_at: '2025-12-10T15:30:00Z', total_amount: 850.00, address: 'Alexandria, Corniche', phone: '01233445566', method: 'COD' }
             ];
             if (endpoint.includes('/products/get.php')) return products;
             if (endpoint.includes('/products/get_single.php')) {
@@ -90,6 +80,36 @@ window.api = {
                     token: 'demo-session-token',
                     user: { id: isAdmin ? 99 : 1, name: isAdmin ? 'Grand Admin' : 'Demo User', role: isAdmin ? 'admin' : 'user' }
                 };
+            }
+            if (endpoint.includes('/products/update.php')) {
+                const products = getProducts();
+                const index = products.findIndex(p => p.id == data.id);
+                if (index > -1) {
+                    products[index] = { ...products[index], ...data };
+                    saveProducts(products);
+                    return { success: true, message: 'Protocol updated in core memory' };
+                }
+            }
+            if (endpoint.includes('/products/add.php')) {
+                const products = getProducts();
+                const newProduct = {
+                    ...data,
+                    id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+                    price: parseFloat(data.price)
+                };
+                products.push(newProduct);
+                saveProducts(products);
+                return { success: true, message: 'New protocol initialized and saved' };
+            }
+            if (endpoint.includes('/products/delete.php')) {
+                const products = getProducts();
+                const index = products.findIndex(p => p.id == data.id);
+                if (index > -1) {
+                    const deletedName = products[index].name;
+                    products.splice(index, 1);
+                    saveProducts(products);
+                    return { success: true, message: `Protocol ${deletedName} deleted from core memory` };
+                }
             }
             return { message: 'Action simulated successfully' };
         }

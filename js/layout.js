@@ -39,7 +39,7 @@ const Layout = {
                 </p>
             </div>
         </footer>
-        <div class="cursor-follower" id="cursor"></div>
+        </footer>
     `,
 
     render: function () {
@@ -67,13 +67,6 @@ const Layout = {
                 }
             });
         }
-
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.opacity = '0.5';
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
 
         document.addEventListener('mousemove', (e) => {
             const cards = document.querySelectorAll('.card');

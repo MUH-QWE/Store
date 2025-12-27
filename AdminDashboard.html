@@ -4,185 +4,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - TAYEB DJERBA</title>
+    <title>NEXUS - Advanced Tactical Command</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/AdminPanel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="gradient-overlay"></div>
-
     <div class="admin-container">
-
-        <aside class="sidebar fade-in">
-            <div class="sidebar-header">
-                <h2><i class="fas fa-microchip"></i> <span class="text-gradient">NEXUS</span> OPS</h2>
-                <div class="user-info">
-                    <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
-                    <div>
-                        <span id="admin-name">Administrator</span>
-                        <small>Level 1 Access</small>
-                    </div>
-                </div>
+        <!-- Persistent Tactical Sidebar -->
+        <header class="admin-top-bar">
+            <div class="sidebar-logo">
+                <i class="fas fa-layer-group"></i>
+                <span>NEXUS</span>
             </div>
+
             <nav class="admin-nav">
-                <a href="#" class="nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-                <a href="Products.html" class="nav-item"><i class="fas fa-box"></i><span>Inventory</span><span
-                        class="badge" id="total-products-stat">0</span></a>
-                <a href="AdminPanel.html" class="nav-item"><i
-                        class="fas fa-shopping-cart"></i><span>Transmissions</span><span class="badge"
-                        id="total-orders-stat">0</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-users"></i><span>Subscribers</span><span class="badge"
-                        id="total-customers-stat">0</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-chart-bar"></i><span>Analytics</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="index.html" class="nav-item"><i class="fas fa-globe"></i><span>Live Site</span></a>
+                <a href="AdminDashboard.html" class="nav-item active"><i
+                        class="fas fa-tachometer-alt"></i><span>Management</span></a>
+                <a href="AdminStaff.html" class="nav-item"><i class="fas fa-users-cog"></i><span>Staff
+                        Control</span></a>
+                <a href="AdminComms.html" class="nav-item">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Comms</span>
+                    <span class="nav-badge">0</span>
+                </a>
             </nav>
-            <div class="sidebar-footer">
-                <button id="logout-btn" class="logout-btn" onclick="store.logout()"><i
-                        class="fas fa-sign-out-alt"></i><span>Terminate Session</span></button>
+
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-crown"></i></div>
+                <div class="user-info">
+                    <h4 id="admin-name" style="margin: 0; font-size: 0.8rem;">Master Admin</h4>
+                </div>
+                <button class="logout-btn" onclick="store.logout()" style="margin-left: 1rem; padding: 0.4rem 0.8rem;">
+                    <i class="fas fa-power-off"></i>
+                </button>
             </div>
-        </aside>
+        </header>
 
+        <!-- Dynamic Operation Area -->
         <main class="main-content">
-            <header class="content-header fade-in stagger-1">
-                <div class="header-title">
-                    <h1>Command <span class="text-gradient">Overview</span></h1>
-                    <p>Welcome back, <span id="admin-name-header">Admin</span></p>
-                </div>
-                <div class="header-actions">
-                    <button id="refresh-btn" class="btn-action" onclick="location.reload()"><i
-                            class="fas fa-sync-alt"></i> SYNC</button>
-                    <button id="export-btn" class="btn-action"><i class="fas fa-download"></i> EXPORT</button>
-                </div>
-            </header>
 
-            <div class="stats-grid fade-in stagger-2">
-                <div class="stat-card" data-type="products">
-                    <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+
+            <!-- Real-time Metrics -->
+            <div class="stats-grid stagger-2">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-microchip"></i></div>
                     <div class="stat-info">
-                        <h3>Total Inventory</h3>
+                        <h3>Inventory Units</h3>
                         <span class="stat-value" id="total-products">0</span>
                     </div>
                 </div>
-                <div class="stat-card" data-type="orders">
-                    <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-satellite-dish"></i></div>
                     <div class="stat-info">
-                        <h3>Active Transmissions</h3>
+                        <h3>Active Comms</h3>
                         <span class="stat-value" id="total-orders">0</span>
                     </div>
                 </div>
-                <div class="stat-card" data-type="customers">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-secret"></i></div>
                     <div class="stat-info">
                         <h3>Identified Entities</h3>
-                        <span class="stat-value" id="total-customers">1,240</span>
+                        <span class="stat-value" id="total-entities">0</span>
                     </div>
                 </div>
             </div>
 
-            <div class="content-grid fade-in stagger-3">
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3>Inventory Management</h3>
+            <!-- Operations Grid -->
+            <div class="content-grid stagger-3">
+                <!-- Deployment Panel -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h3>Asset Management</h3>
                     </div>
 
-                    <div class="filter-bar">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="product-search" placeholder="Filter protocols...">
-                        </div>
-                        <div class="filter-controls">
-                            <select id="category-filter">
-                                <option value="all">All Sectors</option>
-                                <option value="oil">Olive Oil</option>
-                                <option value="ceramics">Ceramics</option>
-                                <option value="textiles">Textiles</option>
-                            </select>
-                            <select id="sort-products">
-                                <option value="newest">Latest First</option>
-                                <option value="price-asc">Price: Low-High</option>
-                                <option value="price-desc">Price: High-Low</option>
-                            </select>
-                        </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="asset-search" placeholder="Locate specific deployment protocol...">
                     </div>
 
                     <div class="table-container">
-                        <table>
+                        <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Image</th>
+                                    <th>Asset Viz</th>
                                     <th>Protocol Name</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
+                                    <th>Economic Value</th>
+                                    <th>Status</th>
+                                    <th>Execution</th>
                                 </tr>
                             </thead>
-                            <tbody id="products-table-body">
-
+                            <tbody id="asset-table-body">
+                                <!-- Assets loaded here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="side-panel">
-                    <div class="content-card">
-                        <h3>Initialize New Protocol</h3>
-                        <form id="add-product-form">
-                            <div class="form-group">
-                                <label>Protocol Name</label>
-                                <input type="text" name="name" required placeholder="Enter protocol name">
-                            </div>
-                            <div class="form-group">
-                                <label>Price (EGP)</label>
-                                <input type="number" name="price" step="0.01" min="0" required placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label>Sector</label>
-                                <select name="category" required>
-                                    <option value="oil">Olive Oil</option>
-                                    <option value="ceramics">Ceramics</option>
-                                    <option value="textiles">Textiles</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Reference Image URL</label>
-                                <input type="text" name="image" placeholder="https://..." required>
-                            </div>
-                            <div class="form-group">
-                                <label>Protocol Description</label>
-                                <textarea name="description" rows="3"></textarea>
-                            </div>
-                            <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> ADD TO
-                                INVENTORY</button>
-                        </form>
+                <!-- Control Panels -->
+                <div class="control-panels">
+                    <div class="panel-card" style="margin-bottom: 2rem;">
+                        <div class="panel-header">
+                            <h3>Real-time Feed</h3>
+                        </div>
+                        <div id="live-feed" class="order-feed" style="max-height: 350px; overflow-y: auto;">
+                            <!-- Live orders here -->
+                        </div>
                     </div>
 
-                    <div class="content-card">
-                        <h3>Recent Transmissions</h3>
-                        <div id="recent-orders" class="orders-list">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Deploy New Asset</h3>
+                        </div>
+                        <form id="add-asset-form" class="terminal-form">
+                            <div class="form-group">
+                                <label
+                                    style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">PROTOCOL
+                                    DESIGNATION</label>
+                                <input type="text" name="name" required placeholder="E.g. Tactical Denim X1"
+                                    style="background: rgba(255,255,255,0.03);">
+                            </div>
 
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label
+                                        style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">ACTIVE
+                                        VALUE</label>
+                                    <input type="number" name="price" required placeholder="0.00"
+                                        style="background: rgba(255,255,255,0.03);">
+                                </div>
+                                <div class="form-group">
+                                    <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">OLD
+                                        VALUE</label>
+                                    <input type="number" name="old_price" placeholder="Optional"
+                                        style="background: rgba(255,255,255,0.03);">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">ASSET
+                                    VISUALIZATION</label>
+                                <div class="file-upload-wrapper">
+                                    <label for="asset-image-source" class="file-upload-label"
+                                        style="padding: 1rem; border-radius: 12px; border: 1px dashed var(--primary); background: rgba(0, 240, 255, 0.05); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-satellite-dish"></i>
+                                        <span id="file-name-display"
+                                            style="font-size: 0.7rem; font-weight: 700;">INITIALIZE VIZ SCAN</span>
+                                    </label>
+                                    <input type="file" id="asset-image-source" accept="image/*" style="display: none;"
+                                        onchange="handleImageSelection(this)">
+                                    <input type="hidden" name="image" id="asset-image-base64">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">PROTOCOL
+                                    DETAILS</label>
+                                <textarea name="description" rows="2" placeholder="Initialize data string..."
+                                    style="background: rgba(255,255,255,0.03);"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary"
+                                style="width: 100%; padding: 1.2rem; margin-top: 1rem; border-radius: 12px; font-weight: 900; letter-spacing: 0.1rem; box-shadow: 0 0 20px rgba(231,111,81,0.15);">
+                                <i class="fas fa-rocket"></i> INITIALIZE DEPLOYMENT
+                            </button>
+                        </form>
+                        <div class="panel-card" id="modulation-panel"
+                            style="display:none; margin-top: 2rem; border-color: var(--primary);">
+                            <div class="panel-header"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3 id="modal-title">Modulate Protocol</h3>
+                                <span class="close-btn"
+                                    onclick="document.getElementById('modulation-panel').style.display='none'"
+                                    style="cursor:pointer; font-size: 1.5rem;">&times;</span>
+                            </div>
+                            <div id="modal-body" class="terminal-form">
+                                <!-- Content injected by JS -->
+                            </div>
+                        </div>
+
+                        <div class="panel-card" id="order-panel"
+                            style="display:none; margin-top: 2rem; border-color: var(--accent);">
+                            <div class="panel-header"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Order Inspection</h3>
+                                <span class="close-btn"
+                                    onclick="document.getElementById('order-panel').style.display='none'"
+                                    style="cursor:pointer; font-size: 1.5rem;">&times;</span>
+                            </div>
+                            <div id="order-body" class="terminal-form">
+                                <!-- Content injected by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </main>
     </div>
 
-    <div id="dashboard-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span id="modal-close" class="close-btn"
-                onclick="document.getElementById('dashboard-modal').style.display='none'">&times;</span>
-            <h2 id="modal-title">Protocol Details</h2>
-            <div id="modal-body">Processing metadata...</div>
-        </div>
-    </div>
+    <!-- Modulation Modal Removed and moved to sidebar -->
 
     <script src="js/ALL.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            LuxeApp.init();
-            window.adminPanel = new AdminPanel();
-
             const user = store.getUser();
             if (!user || user.role !== 'admin') {
                 window.location.href = 'LogIn.html';
@@ -190,87 +216,309 @@
             }
 
             document.getElementById('admin-name').textContent = user.name;
-            document.getElementById('admin-name-header').textContent = user.name;
 
-            initDashboard();
+            initNexus();
+
+            // Search logic
+            document.getElementById('asset-search').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#asset-table-body tr');
+                rows.forEach(row => {
+                    row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
+                });
+            });
         });
 
-        async function initDashboard() {
+        async function initNexus() {
             const products = await api.get('/products/get.php');
             const orders = await api.get('/orders/get_all.php');
 
-            renderProducts(products);
-            renderStats(products, orders);
-            renderRecentOrders(orders);
+            renderAssets(products);
+            renderFeed(orders);
 
-            document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            document.getElementById('total-products').textContent = products.length;
+            document.getElementById('total-orders').textContent = orders.length;
+            document.getElementById('total-entities').textContent = products.length + orders.length; // Dynamic placeholder
+
+            window.handleImageSelection = (input) => {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('asset-image-base64').value = e.target.result;
+                        document.getElementById('file-name-display').textContent = file.name;
+                        document.getElementById('file-name-display').style.color = "var(--accent)";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            document.getElementById('add-asset-form').onsubmit = async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData.entries());
 
-                showNotification('Protocol initialized: ' + data.name, 'success');
-                e.target.reset();
-            });
+                if (!data.image) {
+                    showNotification('Please upload an asset image.', 'error');
+                    return;
+                }
+
+                const res = await api.post('/products/add.php', data);
+                if (res.success) {
+                    showNotification(res.message, 'success');
+                    e.target.reset();
+                    document.getElementById('file-name-display').textContent = "SCAN & UPLOAD ASSET VIZ";
+                    document.getElementById('file-name-display').style.color = "var(--text-dim)";
+                    initNexus();
+                }
+            };
         }
 
-        function renderProducts(products) {
-            const tbody = document.getElementById('products-table-body');
-            tbody.innerHTML = products.map(p => `
+        function renderAssets(assets) {
+            const tbody = document.getElementById('asset-table-body');
+            tbody.innerHTML = assets.map(a => `
                 <tr>
-                    <td><img src="${p.image}" class="product-img-td"></td>
-                    <td>${p.name}</td>
-                    <td><span class="text-gradient" style="font-weight: 700;">${p.price.toFixed(2)} EGP</span></td>
+                    <td><img src="${a.image}" class="product-img"></td>
+                    <td><strong>${a.name}</strong></td>
+                    <td><span style="color: var(--primary); font-weight: 800;">${a.price.toFixed(2)} EGP</span></td>
+                    <td><span class="status-badge">ACTIVE</span></td>
                     <td>
-                        <div class="actions-cell">
-                            <button class="btn-icon" onclick="viewDetails(${p.id})"><i class="fas fa-eye"></i></button>
-                            <button class="btn-icon delete" onclick="showNotification('Operation restricted in demo mode', 'error')"><i class="fas fa-trash"></i></button>
+                        <div class="actions-row">
+                            <button class="btn-mini" title="Edit" onclick="modulateProtocol(${a.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-mini delete" title="Terminate" onclick="terminateProtocol(${a.id})"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </td>
                 </tr>
             `).join('');
-
-            document.getElementById('total-products-stat').textContent = products.length;
-            document.getElementById('total-products').textContent = products.length;
         }
 
-        function renderStats(products, orders) {
-            document.getElementById('total-orders-stat').textContent = orders.length;
-            document.getElementById('total-orders').textContent = orders.length;
+        function renderFeed(orders) {
+            const container = document.getElementById('live-feed');
+            container.innerHTML = orders.map(o => {
+                let statusColor = '#fff';
+                if (o.status.toLowerCase() === 'pending') statusColor = 'var(--primary)';
+                if (o.status.toLowerCase() === 'processing') statusColor = '#00ffa0';
+                if (o.status.toLowerCase() === 'shipped') statusColor = '#00d4ff';
 
-            document.getElementById('total-customers-stat').textContent = '240';
-        }
-
-        function renderRecentOrders(orders) {
-            const container = document.getElementById('recent-orders');
-            container.innerHTML = orders.slice(0, 5).map(o => `
-                <div class="order-mini-card">
-                    <div class="order-mini-info">
-                        <h4>#${o.id} - ${o.user}</h4>
-                        <p>${o.status}</p>
+                return `
+                    <div class="mini-order" onclick="inspectOrder(${o.id})" style="cursor:pointer; transition: 0.3s; border-left: 2px solid transparent;" onmouseover="this.style.borderLeftColor='var(--primary)'" onmouseout="this.style.borderLeftColor='transparent'">
+                        <div class="order-meta">
+                            <h5 style="color: var(--text-primary);">#${o.id} - ${o.user}</h5>
+                            <p style="font-size: 0.6rem; letter-spacing: 1px;">STATUS: <span style="color: ${statusColor}; font-weight: 800;">${o.status.toUpperCase()}</span></p>
+                        </div>
+                        <div class="order-val" style="font-family: monospace; font-weight: 800;">${o.total.toFixed(2)}</div>
                     </div>
-                    <div class="order-mini-price">${o.total.toFixed(2)} EGP</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        window.viewDetails = async (id) => {
-            const modal = document.getElementById('dashboard-modal');
-            const body = document.getElementById('modal-body');
-            const title = document.getElementById('modal-title');
-            modal.style.display = 'flex';
+        window.inspectOrder = async (id) => {
+            const panel = document.getElementById('order-panel');
+            const body = document.getElementById('order-body');
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            const product = await api.get('/products/get_single.php?id=' + id);
-            title.textContent = "Metadata: " + product.name;
+            const orders = await api.get('/orders/get_all.php');
+            const o = orders.find(x => x.id === id);
+
+            if (!o) return;
+
             body.innerHTML = `
-                <div style="display: flex; gap: 2rem;">
-                    <img src="${product.image}" style="width: 150px; border-radius: 16px;">
-                    <div>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">${product.description}</p>
-                        <p>Valuation: <span class="text-gradient" style="font-weight: 700; font-size: 1.5rem;">${product.price.toFixed(2)} EGP</span></p>
+                <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--text-dim); font-size: 0.7rem;">BUYER</span>
+                        <span style="font-weight: 700;">${o.user}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--text-dim); font-size: 0.7rem;">CONTACT FREQUENCY</span>
+                        <span style="color: var(--accent); font-weight: 700;">${o.phone || 'DATA_NOT_FOUND'}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--text-dim); font-size: 0.7rem;">COORDINATES (ADDR)</span>
+                        <span style="font-weight: 500; font-size: 0.8rem; text-align: right;">${o.address || 'DATA_NOT_FOUND'}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--text-dim); font-size: 0.7rem;">METHOD</span>
+                        <span style="color: var(--primary); font-weight: 700;">${o.method}</span>
+                    </div>
+                    ${o.proof ? `
+                        <div style="margin-top: 1rem;">
+                            <p style="font-size: 0.6rem; color: var(--primary); margin-bottom: 0.5rem;">PAYMENT ATTACHMENT</p>
+                            <img src="${o.proof}" style="width: 100%; border-radius: 8px; border: 1px solid var(--glass-border);">
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="form-group">
+                    <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">UPDATE PROTOCOL STATUS</label>
+                    <select id="new-order-status" style="background: #000; color: #fff; border: 1px solid var(--glass-border); padding: 0.8rem; width: 100%; border-radius: 8px;">
+                        <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>PENDING</option>
+                        <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>PROCESSING</option>
+                        <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>SHIPPED</option>
+                        <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>COMPLETED</option>
+                        <option value="Rejected" ${o.status === 'Rejected' ? 'selected' : ''}>REJECTED</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" onclick="updateOrderStatus(${o.id})" style="width: 100%; padding: 1rem; border-radius: 10px; background: var(--accent);">
+                    <i class="fas fa-sync-alt"></i> SYNC ORDER STATUS
+                </button>
+            `;
+        }
+
+        window.updateOrderStatus = async (id) => {
+            const status = document.getElementById('new-order-status').value;
+            let rejectionReason = '';
+
+            if (status === 'Rejected') {
+                rejectionReason = prompt('ENTER REJECTION PROTOCOL REASON:');
+                if (!rejectionReason) {
+                    showNotification('Rejection requires a reason payload.', 'error');
+                    return;
+                }
+            }
+
+            const res = await api.post('/orders/update_status.php', { id, status, reason: rejectionReason });
+            if (res.success) {
+                // Simulate sending message to user inbox
+                try {
+                    const orders = await api.get('/orders/get_all.php');
+                    const o = orders.find(x => x.id === id);
+                    if (o) {
+                        const userId = 1; // Demo fallback
+                        const inboxKey = `nexus_inbox_${userId}`;
+                        const inbox = JSON.parse(localStorage.getItem(inboxKey) || '[]');
+
+                        let subject = `Protocol #${id} Updated: ${status.toUpperCase()}`;
+                        let body = `Your transaction protocol #${id} has been transitioned to ${status.toUpperCase()} state.`;
+
+                        if (status === 'Rejected') {
+                            subject = `CRITICAL: Protocol #${id} REJECTED`;
+                            body = `Your transaction protocol #${id} has been REJECTED by Central Command.\n\nREASON: ${rejectionReason}\n\nPlease contact support for re-authorization.`;
+                        }
+
+                        inbox.unshift({
+                            id: Date.now().toString(),
+                            type: status === 'Rejected' ? 'REJECTION' : 'SYSTEM',
+                            subject,
+                            body,
+                            time: new Date().toISOString(),
+                            unread: true
+                        });
+                        localStorage.setItem(inboxKey, JSON.stringify(inbox));
+                    }
+                } catch (e) { console.error("Inbox simulation failed", e); }
+
+                showNotification('Order protocol synchronized and user notified', 'success');
+                document.getElementById('order-panel').style.display = 'none';
+                initNexus();
+            }
+        };
+
+        window.terminateProtocol = async (id) => {
+            if (!confirm("TERMINATE PROTOCOL? Data will be purged from Core.")) return;
+            const res = await api.post('/products/delete.php', { id });
+            if (res.success) {
+                showNotification(res.message, 'success');
+                initNexus();
+            }
+        };
+
+        window.modulateProtocol = async (id) => {
+            const panel = document.getElementById('modulation-panel');
+            const body = document.getElementById('modal-body');
+            panel.style.display = 'block';
+
+            // Scroll to the panel immediately
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            const asset = await api.get('/products/get_single.php?id=' + id);
+            body.innerHTML = `
+                <div class="modulation-sidebar-layout">
+                    <div class="asset-preview-zone" style="margin-bottom: 2rem;">
+                        <div class="image-container-mod" style="position: relative; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass-border); aspect-ratio: 16/9; background: var(--glass);">
+                            <img id="mod-preview-img" src="${asset.image}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="scan-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--primary); box-shadow: 0 0 15px var(--primary); animation: scanLine 3s linear infinite;"></div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
+                            <label for="mod-image-upload" class="btn-secondary" style="flex: 1; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-size: 0.7rem; text-align: center;">
+                                <i class="fas fa-sync-alt"></i> CHANGE VIZ
+                            </label>
+                            <input type="file" id="mod-image-upload" accept="image/*" style="display: none;" onchange="handleModImage(this)">
+                            <span style="font-size: 0.6rem; color: var(--text-dim); font-family: monospace;">#${id}</span>
+                        </div>
+                    </div>
+
+                    <div class="terminal-form">
+                        <div class="form-group">
+                            <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">DESIGNATION</label>
+                            <input type="text" id="mod-name" value="${asset.name}" style="background: rgba(255,255,255,0.02); padding: 0.8rem;">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">ACTIVE PRICE</label>
+                                <input type="number" id="mod-price" value="${asset.price}" style="background: rgba(255,255,255,0.02); padding: 0.8rem;">
+                            </div>
+                            <div class="form-group">
+                                <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">OLD PRICE</label>
+                                <input type="number" id="mod-old-price" value="${asset.old_price || ''}" placeholder="None" style="background: rgba(255,255,255,0.02); padding: 0.8rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="color: var(--primary); letter-spacing: 0.1rem; font-size: 0.7rem;">PROTOCOL DETAILS</label>
+                            <textarea id="mod-desc" rows="3" style="background: rgba(255,255,255,0.02); padding: 0.8rem;">${asset.description}</textarea>
+                        </div>
+                        
+                        <input type="hidden" id="mod-image-base64" value="${asset.image}">
+                        
+                        <button class="btn-primary" onclick="commitModulation(${id})" style="width: 100%; padding: 1rem; margin-top: 1rem; border-radius: 10px;">
+                            <i class="fas fa-check-double"></i> COMMIT CHANGES
+                        </button>
                     </div>
                 </div>
             `;
         }
+
+        window.handleModImage = (input) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('mod-preview-img').src = e.target.result;
+                    document.getElementById('mod-image-base64').value = e.target.result;
+                    showNotification('Vector visualization modulated', 'info');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.commitModulation = async (id) => {
+            const data = {
+                id,
+                name: document.getElementById('mod-name').value,
+                price: parseFloat(document.getElementById('mod-price').value),
+                old_price: document.getElementById('mod-old-price').value ? parseFloat(document.getElementById('mod-old-price').value) : null,
+                description: document.getElementById('mod-desc').value,
+                image: document.getElementById('mod-image-base64').value
+            };
+
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCING CORE...';
+            btn.disabled = true;
+
+            const res = await api.post('/products/update.php', data);
+            if (res.success) {
+                showNotification(res.message, 'success');
+                document.getElementById('modulation-panel').style.display = 'none';
+                initNexus();
+            } else {
+                btn.innerHTML = '<i class="fas fa-check-double"></i> COMMIT SYSTEM MODULATION';
+                btn.disabled = false;
+            }
+        };
     </script>
 </body>
 

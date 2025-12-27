@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact NEXUS | TAYEB DJERBA</title>
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .contact-info {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .contact-form {
+            padding: 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 8rem; min-height: 100vh;">
+        <div class="container">
+            <header style="text-align: center; margin-bottom: 4rem;">
+                <h1 class="fade-in stagger-1">Establish <span class="text-gradient">Connection</span></h1>
+                <p class="fade-in stagger-2" style="color: var(--text-secondary); margin-top: 1rem;">Direct transmission
+                    protocol to NEXUS Hub</p>
+            </header>
+
+            <div class="contact-grid">
+                <div class="contact-info fade-in stagger-3">
+                    <h2 style="margin-bottom: 2rem;">Hub Details</h2>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-satellite"></i></div>
+                        <div>
+                            <h4 style="color: var(--primary);">Sector Location</h4>
+                            <p style="color: var(--text-secondary);">Djerba Island, Tunisia - Frequency 7.01</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-microchip"></i></div>
+                        <div>
+                            <h4 style="color: var(--primary);">Network ID</h4>
+                            <p style="color: var(--text-secondary);">@tayeb_djerba_nexus</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <h4 style="color: var(--primary);">Secure Mail</h4>
+                            <p style="color: var(--text-secondary);">ops@nexus.com</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 3rem; opacity: 0.5;">
+                        <p style="font-size: 0.7rem;">Transmission security is guaranteed via 256-bit encryption
+                            protocol.</p>
+                    </div>
+                </div>
+
+                <div class="contact-form fade-in stagger-4">
+                    <form id="nexus-contact-form">
+                        <div class="form-group">
+                            <label>Inquirer Name</label>
+                            <input type="text" id="name" required placeholder="Identify yourself...">
+                        </div>
+                        <div class="form-group">
+                            <label>Secure Email</label>
+                            <input type="email" id="email" required placeholder="For return frequency...">
+                        </div>
+                        <div class="form-group">
+                            <label>Transmission Subject</label>
+                            <input type="text" id="subject" required placeholder="Summary of inquiry...">
+                        </div>
+                        <div class="form-group">
+                            <label>Payload (Message)</label>
+                            <textarea id="message" rows="5" required placeholder="Broadcast your message..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%; padding: 1.2rem; margin-top: 1rem;">
+                            <i class="fas fa-paper-plane"></i> INITIALIZE BROADCAST
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/ALL.js?v=1.1"></script>
+    <script src="js/layout.js?v=1.1"></script>
+    <script src="js/header.js?v=1.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Layout.render();
+
+            const form = document.getElementById('nexus-contact-form');
+            if (store.getUser()) {
+                document.getElementById('name').value = store.getUser().name;
+                document.getElementById('email').value = store.getUser().email;
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const user = store.getUser();
+                const msg = {
+                    id: Date.now(),
+                    user_id: user ? user.id : 'visitor',
+                    sender: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value,
+                    time: new Date().toISOString(),
+                    status: 'unread'
+                };
+
+                // Store message for admin to see
+                const messages = JSON.parse(localStorage.getItem('nexus_user_messages') || '[]');
+                messages.unshift(msg);
+                localStorage.setItem('nexus_user_messages', JSON.stringify(messages));
+
+                showNotification('Transmission sent to NEXUS relays', 'success');
+                form.reset();
+                if (store.getUser()) {
+                    document.getElementById('name').value = store.getUser().name;
+                    document.getElementById('email').value = store.getUser().email;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -23,6 +23,8 @@
 
 html {
     scroll-behavior: smooth;
+    font-size: 15px;
+    /* Slight zoom out for a more premium, spacious feel */
 }
 
 body {
@@ -33,6 +35,8 @@ body {
     overflow-x: hidden;
     line-height: 1.6;
     letter-spacing: 0.02em;
+    zoom: 0.8;
+    /* Global 80% zoom effect */
 }
 
 body::before {
@@ -74,6 +78,25 @@ body::before {
     }
 }
 
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0) translateX(-50%);
+    }
+
+    40% {
+        transform: translateY(-10px) translateX(-50%);
+    }
+
+    60% {
+        transform: translateY(-5px) translateX(-50%);
+    }
+}
+
 h1,
 h2,
 h3,
@@ -87,7 +110,9 @@ h4 {
     background: linear-gradient(to right, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    color: var(--primary);
+    /* Fallback */
+    -webkit-text-fill-color: transparent;
 }
 
 .container {
@@ -317,20 +342,6 @@ nav {
     background: var(--secondary);
     color: var(--bg-base);
     box-shadow: 0 0 20px rgba(255, 0, 214, 0.5);
-}
-
-.cursor-follower {
-    position: fixed;
-    width: 30px;
-    height: 30px;
-    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: screen;
-    opacity: 0;
-    transition: opacity 0.3s;
 }
 
 ::-webkit-scrollbar {

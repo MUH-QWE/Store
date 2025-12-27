@@ -65,6 +65,17 @@
         let selectedSize = 'S';
         let currentProduct = null;
 
+        function changeFontSize(size) {
+            const desc = document.getElementById('product-description');
+            if (desc) {
+                desc.style.fontSize = size;
+                // Save specific font size for this product protocol
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id') || 1;
+                localStorage.setItem(`product_desc_font_${productId}`, size);
+            }
+        }
+
         function selectSize(el, size) {
             console.log('Size Triggered:', size);
             document.querySelectorAll('.option-badge').forEach(b => b.classList.remove('active'));
@@ -117,15 +128,44 @@
                     <div class="fade-in stagger-2">
                         <span style="color: var(--accent); font-size: 0.8rem; letter-spacing: 0.2em;">PREMIUM ARCHIVE</span>
                         <h1 style="font-size: 3.5rem; margin: 1rem 0; line-height: 1.1;">${currentProduct.name}</h1>
-                        <p class="text-gradient" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">${currentProduct.price.toFixed(2)} EGP</p>
+                        <div style="margin-bottom: 2rem;">
+                            ${currentProduct.old_price ? `
+                                <div style="display: inline-block; background: var(--primary); color: #000; padding: 0.2rem 0.6rem; border-radius: 5px; font-size: 0.7rem; font-weight: 900; margin-bottom: 0.5rem; vertical-align: middle;">LIMITED OFFER</div>
+                                <p style="font-size: 1.2rem; color: var(--text-dim); text-decoration: line-through; margin-bottom: 0.2rem;">${currentProduct.old_price.toFixed(2)} EGP</p>
+                            ` : ''}
+                            <p class="text-gradient" style="font-size: 2.5rem; font-weight: 700; margin: 0;">${currentProduct.price.toFixed(2)} EGP</p>
+                        </div>
 
-                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2.5rem; font-weight: 300;">
+                        ${store.getUser()?.role === 'admin' ? `
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--primary); display: flex; justify-content: space-between; align-items: center;">
+                                <span>DESCRIPTION FONT SIZE (ADMIN ONLY)</span>
+                                <select id="font-size-selector" onchange="changeFontSize(this.value)" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.2rem 0.5rem; font-size: 0.8rem;">
+                                    <option value="10px">10px</option>
+                                    <option value="11px">11px</option>
+                                    <option value="12px" selected>12px</option>
+                                    <option value="13px">13px</option>
+                                    <option value="14px">14px</option>
+                                    <option value="15px">15px</option>
+                                    <option value="16px">16px</option>
+                                    <option value="17px">17px</option>
+                                    <option value="18px">18px</option>
+                                    <option value="19px">19px</option>
+                                    <option value="20px">20px</option>
+                                    <option value="21px">21px</option>
+                                    <option value="22px">22px</option>
+                                </select>
+                            </h4>
+                        </div>
+                        ` : ''}
+
+                        <p id="product-description" style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2.5rem; font-weight: 300; font-size: 12px;">
                             ${currentProduct.description}
                         </p>
 
                         <div style="margin-bottom: 2.5rem;">
                             <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--primary);">SELECT TRANSLATION (SIZE)</h4>
-                            <div style="display: flex; gap: 1.2rem;">
+                            <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
                                 <div class="option-badge active" onclick="selectSize(this, 'S')">S</div>
                                 <div class="option-badge" onclick="selectSize(this, 'M')">M</div>
                                 <div class="option-badge" onclick="selectSize(this, 'L')">L</div>
@@ -133,15 +173,24 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 2rem;">
+                        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                             ${store.getUser() ? `
-                                <button class="btn" style="flex: 2; padding: 1.2rem; font-size: 1rem;" onclick="addToArsenal()">Add to Arsenal</button>
+                                <button class="btn" style="flex: 2; min-width: 200px; padding: 1.2rem; font-size: 1rem;" onclick="addToArsenal()">Add to Arsenal</button>
                             ` : `
-                                <a href="LogIn.html" class="btn" style="flex: 2; padding: 1.2rem; text-decoration: none; text-align: center; font-size: 1rem;">Login to Purchase</a>
+                                <a href="LogIn.html" class="btn" style="flex: 2; min-width: 200px; padding: 1.2rem; text-decoration: none; text-align: center; font-size: 1rem;">Login to Purchase</a>
                             `}
-                            <button class="btn btn-secondary" style="flex: 1; padding: 1.2rem; min-width: 60px; color: ${store.isInWishlist(currentProduct.id) ? 'var(--secondary)' : 'var(--text-primary)'};" onclick="toggleWish(${currentProduct.id}, this)">
-                                ${store.isInWishlist(currentProduct.id) ? '❤️' : '★'}
-                            </button>
+                            
+                            <div style="display: flex; gap: 1rem; flex: 1; min-width: 120px;">
+                                <button class="btn btn-secondary" style="flex: 1; padding: 1.2rem; color: ${store.isInWishlist(currentProduct.id) ? 'var(--secondary)' : 'var(--text-primary)'};" onclick="toggleWish(${currentProduct.id}, this)">
+                                    ${store.isInWishlist(currentProduct.id) ? '❤️' : '★'}
+                                </button>
+
+                                ${store.getUser()?.role === 'admin' ? `
+                                    <a href="AdminDashboard.html" class="btn btn-secondary" style="flex: 1; padding: 1.2rem; display: flex; align-items: center; justify-content: center;" title="Edit Product">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -158,6 +207,15 @@
                 imgContainer.addEventListener('mouseleave', () => {
                     img.style.transform = `scale(1) rotateY(0) rotateX(0)`;
                 });
+
+                // Load saved font size
+                const savedSize = localStorage.getItem(`product_desc_font_${productId}`);
+                if (savedSize) {
+                    const desc = document.getElementById('product-description');
+                    if (desc) desc.style.fontSize = savedSize;
+                    const selector = document.getElementById('font-size-selector');
+                    if (selector) selector.value = savedSize;
+                }
             }
         });
     </script>

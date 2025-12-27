@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | NEXUS</title>
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 2rem;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+        }
+
+        .profile-sidebar {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3rem;
+            text-align: center;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+        }
+
+        .profile-main {
+            padding: 3.5rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main style="padding-top: 8rem; min-height: 100vh;">
+        <div class="container">
+            <header style="text-align: center; margin-bottom: 4rem; position: relative;">
+                <a href="index.html" class="btn-secondary"
+                    style="position: absolute; left: 0; top: 0; padding: 0.6rem 1.2rem; font-size: 0.7rem; border-radius: 8px;">
+                    <i class="fas fa-chevron-left"></i> RETURN TO STORE
+                </a>
+                <h1 class="fade-in stagger-1">Entity <span class="text-gradient">Profile</span></h1>
+                <p class="fade-in stagger-2" style="color: var(--text-secondary); margin-top: 1rem;">Personal data
+                    protocol visualization</p>
+            </header>
+
+            <div class="profile-container fade-in stagger-3">
+                <div class="profile-card">
+                    <div class="profile-sidebar">
+                        <div class="profile-avatar" id="avatar-init">?</div>
+                        <h2 id="profile-name-side" style="margin-bottom: 0.5rem;">User</h2>
+                        <span id="profile-role" class="status-badge"
+                            style="background: rgba(0,240,255,0.1); color: var(--primary);">Loading...</span>
+
+                        <div style="margin-top: 3rem;">
+                            <button class="btn btn-secondary" style="width: 100%; border-radius: 12px;"
+                                onclick="store.logout()">
+                                <i class="fas fa-power-off"></i> LOGOUT
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-main">
+                        <div style="margin-bottom: 3rem;">
+                            <h3>Core Credentials</h3>
+                            <div style="margin-top: 1.5rem;">
+                                <div style="margin-bottom: 1rem;">
+                                    <label
+                                        style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;">Identity
+                                        Handle</label>
+                                    <p id="profile-name" style="font-size: 1.2rem; font-weight: 700;"></p>
+                                </div>
+                                <div>
+                                    <label
+                                        style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;">Registered
+                                        Frequency</label>
+                                    <p id="profile-email" style="font-size: 1.1rem; color: var(--text-secondary);"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="order-count">0</div>
+                                <div class="stat-label">Deployments (Orders)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="wish-count">0</div>
+                                <div class="stat-label">Saved Protocols</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:3rem;">
+                            <a href="Orders.html" class="btn"
+                                style="width: 100%; text-align: center; text-decoration: none; display: block; border-radius: 12px; padding: 1.2rem;">
+                                <i class="fas fa-history"></i> VIEW DEPLOYMENT HISTORY
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/ALL.js?v=1.1"></script>
+    <script src="js/layout.js?v=1.1"></script>
+    <script src="js/header.js?v=1.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            Layout.render();
+            const user = store.getUser();
+            if (!user) {
+                window.location.href = 'LogIn.html';
+                return;
+            }
+
+            // Update UI
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-name-side').textContent = user.name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-role').textContent = user.role.toUpperCase();
+            document.getElementById('avatar-init').textContent = user.name.charAt(0).toUpperCase();
+
+            // Simulate Stats
+            const orders = await api.get('/orders/get.php');
+            document.getElementById('order-count').textContent = orders.length;
+
+            const wishlist = JSON.parse(sessionStorage.getItem('store_wishlist_demo') || '[]');
+            document.getElementById('wish-count').textContent = wishlist.length;
+        });
+    </script>
+</body>
+
+</html>

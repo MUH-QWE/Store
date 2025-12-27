@@ -39,19 +39,55 @@
             const list = document.getElementById('orders-list');
 
             if (orders && orders.length > 0) {
-                list.innerHTML = orders.map(o => `
-                    <div class="card" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; padding: 2rem;">
-                        <div>
-                            <span style="color: var(--primary); font-size: 0.7rem; letter-spacing: 0.2em;">ORDER ID: #${o.id}</span>
-                            <h3 style="margin: 0.5rem 0;">Status: <span style="color: ${o.status === 'paid' ? 'var(--accent)' : 'var(--secondary)'}">${o.status}</span></h3>
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 300;">Authorized on: ${new Date(o.created_at).toLocaleDateString()}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <p class="text-gradient" style="font-weight: 700; font-size: 1.5rem;">${parseFloat(o.total_amount).toFixed(2)} EGP</p>
-                            <a href="#" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.6rem; margin-top: 0.5rem;">View Protocol</a>
+                list.innerHTML = orders.map(o => {
+                    let statusColor = 'var(--text-secondary)';
+                    if (o.status.toLowerCase() === 'pending') statusColor = 'var(--primary)';
+                    if (o.status.toLowerCase() === 'shipped') statusColor = '#00d4ff';
+                    if (o.status.toLowerCase() === 'paid' || o.status.toLowerCase() === 'completed') statusColor = '#00ffa0';
+
+                    return `
+                    <div class="card" style="margin-bottom: 2rem; padding: 2.5rem; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${statusColor};"></div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2rem;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <span style="color: var(--primary); font-size: 0.7rem; letter-spacing: 0.2em; font-weight: 800;">ORDER ID: #${o.id}</span>
+                                    <span style="background: ${statusColor}22; color: ${statusColor}; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.6rem; font-weight: 900; letter-spacing: 1px; border: 1px solid ${statusColor}44;">
+                                        ${o.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.3rem;">DISPATCH TERMINAL</p>
+                                        <p style="font-size: 0.85rem; font-weight: 400;">${o.address}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.3rem;">CONTACT FREQUENCY</p>
+                                        <p style="font-size: 0.85rem; font-weight: 400; color: var(--accent);">${o.phone}</p>
+                                    </div>
+                                </div>
+
+                                <p style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 300;"> 
+                                    <i class="fas fa-calendar-alt" style="margin-right: 5px; color: var(--primary);"></i>
+                                    Authorized on: ${new Date(o.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
+
+                            <div style="text-align: right; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.3rem;">QUANTUM TOTAL</p>
+                                    <p class="text-gradient" style="font-weight: 800; font-size: 1.8rem; margin: 0;">${parseFloat(o.total_amount).toFixed(2)}</p>
+                                    <p style="font-size: 0.6rem; color: var(--primary); font-weight: 700;">EGP • ${o.method.toUpperCase()}</p>
+                                </div>
+                                <a href="#" class="btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.7rem; margin-top: 1rem; text-decoration: none; display: inline-block; border-radius: 8px;">
+                                    RECALL DETAILS
+                                </a>
+                            </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
                 list.innerHTML = `
                     <div class="card" style="text-align: center; padding: 4rem;">
